@@ -1,55 +1,19 @@
 package me.dio.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 import me.dio.model.Account;
 import me.dio.repository.AccountRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AccountService {
-
     private final AccountRepository repo;
+    public AccountService(AccountRepository repo) { this.repo = repo; }
 
-    public AccountService(AccountRepository repo) {
-        this.repo = repo;
-    }
-
-    public List<Account> listAll() {
-        return repo.findAll();
-    }
-
-    public Account getByAccountNumber(String accountNumber) {
-        return repo.findById(accountNumber)
-                   .orElseThrow(() -> new RuntimeException("Account not found"));
-    }
-
-    public Account create(Account account) {
-        return repo.save(account);
-    }
-
-    public Account update(String accountNumber, Account updated) {
-        Account existing = getByAccountNumber(accountNumber);
-
-        existing.setName(updated.getName());
-        existing.setAccountAgency(updated.getAccountAgency());
-        existing.setAccountBalance(updated.getAccountBalance());
-        existing.setAccountLimit(updated.getAccountLimit());
-        existing.setPixIcon(updated.getPixIcon());
-        existing.setPixDescription(updated.getPixDescription());
-        existing.setPayIcon(updated.getPayIcon());
-        existing.setPayDescription(updated.getPayDescription());
-        existing.setTransferIcon(updated.getTransferIcon());
-        existing.setTransferDescription(updated.getTransferDescription());
-        existing.setCardNumber(updated.getCardNumber());
-        existing.setCardLimit(updated.getCardLimit());
-        existing.setNewsIcon(updated.getNewsIcon());
-        existing.setNewsDescription(updated.getNewsDescription());
-
-        return repo.save(existing);
-    }
-
-    public void delete(String accountNumber) {
-        repo.deleteById(accountNumber);
-    }
+    public List<Account> findAll() { return repo.findAll(); }
+    public Account findById(Long id) { return repo.findById(id).orElseThrow(() -> new RuntimeException("Account not found: " + id)); }
+    @Transactional public Account create(Account a) { return repo.save(a); }
+    @Transactional public Account update(Long id, Account a) { a.setId(id); return repo.save(a); }
+    @Transactional public void delete(Long id) { repo.deleteById(id); }
 }
